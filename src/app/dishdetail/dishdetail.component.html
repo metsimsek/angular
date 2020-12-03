@@ -30,26 +30,65 @@
             </div>
         </div>
 
-        <div fxFlex="40">
+        <div fxFlex="40" fxFlexOffset="20px">
             <div fxFlex>
                 <div class="row">
                     <h1>Comments</h1>
                 </div>
-                <mat-grid-list cols="1" rowHeight="80px">
-                    <mat-grid-tile *ngFor="let comment of dish['comments']">
-                        <div fxFlex>
-                            <div mat-line>
-                                {{comment['comment'] | slice:0:60}}
+                <div class="row">
+                    <mat-grid-list cols="1" rowHeight="80px">
+                        <mat-grid-tile *ngFor="let comment of dish['comments']">
+                            <div fxFlex>
+                                <div mat-line>
+                                    {{comment['comment'] | slice:0:60}}
+                                </div>
+                                <div mat-line>
+                                    {{comment['rating']}} Star
+                                </div>
+                                <div mat-line>
+                                    -- {{comment['author']}} {{comment['date'] | date}}
+                                </div>
                             </div>
-                            <div mat-line>
-                                {{comment['rating']}} Star
-                            </div>
-                            <div mat-line>
-                                {{comment['author']}} {{comment['date'] | date}}
-                            </div>
-                        </div>
-                    </mat-grid-tile>
-                </mat-grid-list>
+                        </mat-grid-tile>
+                        <mat-grid-tile *ngIf="commentForm.valid">
+                            <div fxFlex>
+                                <div mat-line>
+                                    {{comment.value}}
+                                </div>
+                                <div mat-line>
+                                    {{rating.value}} Star
+                                </div>
+                                <div mat-line>
+                                    -- {{author.value}}
+                                </div>
+                            </div>  
+                        </mat-grid-tile>
+                    </mat-grid-list>
+                </div>
+                <div class="row">
+                    <form novalidate [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+                        <p>
+                            <mat-form-field class="half-width">
+                                <input matInput #author formControlName="author" placeholder="Name" type="text"
+                                    required>
+                                <mat-error *ngIf="formErrors.author">{{formErrors.author}}</mat-error>
+                            </mat-form-field>
+                        </p>
+                        <p>
+                            <mat-slider #rating formControlName="rating" thumbLabel tickInterval="1" min="1" max="5"
+                                [(value)]="commentForm.rating"></mat-slider>
+                        </p>
+                        <p>
+                            <mat-form-field class="half-width">
+                                <textarea matInput #comment formControlName="comment" placeholder="Your Comment"
+                                    type="text" required></textarea>
+                                <mat-error *ngIf="formErrors.comment">{{formErrors.comment}}</mat-error>
+                            </mat-form-field>
+                        </p>
+                        <button type="submit" [disabled]="commentForm.invalid" mat-button
+                            class="background-primary text-floral-white">Submit</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
