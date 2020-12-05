@@ -19,6 +19,7 @@ export class DishdetailComponent implements OnInit {
   dishIds: string[];
   prev: string;
   next: string;
+  dishErrMess: string;
 
   commentForm: FormGroup;
   newComment: Comment;
@@ -26,7 +27,7 @@ export class DishdetailComponent implements OnInit {
   constructor(private dishservice: DishService,
     private route: ActivatedRoute,
     private location: Location,
-    @Inject('BaseURL') private baseURL,
+    @Inject('BaseURL') private BaseURL,
     private fb: FormBuilder) {
       this.createForm();
     }
@@ -34,7 +35,8 @@ export class DishdetailComponent implements OnInit {
     ngOnInit() {
       this.dishservice.getDishIds().subscribe(dishIds => this.dishIds = dishIds);
       this.route.params.pipe(switchMap((params: Params) => this.dishservice.getDish(+params['id'])))
-      .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); });
+      .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); },
+        errmess => this.dishErrMess = <any>errmess);
     }
 
     setPrevNext(dishId: string) {
