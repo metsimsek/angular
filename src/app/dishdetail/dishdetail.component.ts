@@ -20,11 +20,12 @@ export class DishdetailComponent implements OnInit {
   prev: string;
   next: string;
   dishErrMess: string;
+  dishcopy: Dish;
 
   commentForm: FormGroup;
-  newComment: Comment;
+  comment: Comment;
 
-  constructor(private dishservice: DishService,
+  constructor(private dishService: DishService,
     private route: ActivatedRoute,
     private location: Location,
     @Inject('BaseURL') private BaseURL,
@@ -33,10 +34,11 @@ export class DishdetailComponent implements OnInit {
     }
 
     ngOnInit() {
-      this.dishservice.getDishIds().subscribe(dishIds => this.dishIds = dishIds);
-      this.route.params.pipe(switchMap((params: Params) => this.dishservice.getDish(+params['id'])))
-      .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); },
-        errmess => this.dishErrMess = <any>errmess);
+      this.dishService.getDishIds().subscribe(dishIds => this.dishIds = dishIds);
+
+      this.route.params.pipe(switchMap((params: Params) => this.dishService.getDish(params['id'])))
+      .subscribe(dish => { this.dish = dish; this.dishcopy = dish; this.setPrevNext(dish.id); },
+        errmess => this.dishErrMess = <any>errmess );
     }
 
     setPrevNext(dishId: string) {
@@ -98,15 +100,15 @@ export class DishdetailComponent implements OnInit {
     }
     
     onSubmit() {
-      this.newComment = this.commentForm.value;
+      this.comment = this.commentForm.value;
+      this.comment.date = new Date().toISOString();
 
-      let tmpComment = new Comment();
-      tmpComment.author = this.newComment['author'];
-      tmpComment.comment = this.newComment['comment'];
-      tmpComment.date = new Date().toISOString();
-      tmpComment.rating = this.newComment['rating'];
-
-      this.dish.comments.push(tmpComment);
+      this.dishcopy.comments.push(this.comment);
+      this.dishService.putDish(this.dishcopy)
+      .subscribe(dish => {
+        this.dish = dish; this.dishcopy = dish;
+      },
+      errmess => { this.dish = null; this.dishcopy = null; this.dishErrMess = <any>errmess; });
 
       this.commentForm.reset({
         author: '',
