@@ -1,5 +1,5 @@
 
-Client-side Development of a Restaurant Web Application with Angular, TypeScript and Angular Material
+## Client-side Development of a Restaurant Web Application with Angular, TypeScript and Angular Material
 
 1. Create Angular components within our Angular application
 
